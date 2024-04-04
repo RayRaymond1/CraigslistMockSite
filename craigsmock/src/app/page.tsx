@@ -4,10 +4,10 @@ import './globals.css'
 
 export default function Home() {
   return (
-    <main className="flex items-center place-content-center  p-24">
+    <main className="flex items-center  p-24">
       <LeftBar/>
       <TopBar/>
-      <Categories/>
+      <NearbyBar/>
     </main>
   );
 }
@@ -29,19 +29,19 @@ export function LeftBar(){
   );
 }
 
-export function Categories(){
+export function NearbyBar(){
   return (
-    <div>
-      Hello!
+    <div className="flex justify-between bg-slate-200 border-x-2 border-slate-500 w-1/6">
+        Hello
     </div>
   );
 }
 
 export function TopBar(){
   return(
-    <div className="flex justify-between bg-slate-200 border-x-2 border-slate-500 mx-1 ">
+    <div className="flex justify-between bg-slate-200 border-x-2 border-slate-500 mx-1 w-2/3">
       <p className="text-4xl">Philadelphia</p>
-      <div><div className=""> <a href="/"><Image src="/compose.svg" height={50} width={50} alt=""/>Ray's List</a></div></div>
+      <div><a href="/"><Image src="/compose.svg" height={50} width={50} alt=""/>Ray's List</a></div>
     </div>
   );
 }
