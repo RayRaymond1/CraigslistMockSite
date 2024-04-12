@@ -40,8 +40,8 @@ export function RightBar(){
 
 export function MiddleContent(){
   return(
-    <div className="grid grid-flow-row grid-cols-2 content-start gap-4">
-    <Card className="self-start">
+    <div className="grid grid-flow-row grid-cols-2 grid-rows-2 gap-4">
+    <Card>
       <CardHeader className="items-center">
         <div><p>Community</p></div>
       </CardHeader>
@@ -67,8 +67,7 @@ export function MiddleContent(){
         </div>
       </CardBody>
       </Card>
-
-      <Card className="self-start">
+      <Card>
       <CardHeader className="items-center">
         <div><p>Housing</p></div>
       </CardHeader>
@@ -88,8 +87,7 @@ export function MiddleContent(){
         </div>
       </CardBody>
       </Card>
-
-      <Card className="self-start">
+      <Card>
       <CardHeader className="items-center">
         <div><p>Services</p></div>
       </CardHeader>
@@ -120,8 +118,7 @@ export function MiddleContent(){
         </div>
       </CardBody>
       </Card>
-
-      <Card className="self-start">
+      <Card>
       <CardHeader className="items-center">
         <div><p>For Sale</p></div>
       </CardHeader>
@@ -145,65 +142,9 @@ export function MiddleContent(){
           <div>Business</div>
           <div>Cars + Trucks</div>
           <div>CDs/DVD/VHS</div>
-          <div>Cell Phones</div>
-          <div>Clothes + Acc</div>
-          <div>Collectables</div>
-          <div>Computer Parts</div>
-          <div>Computers</div>
-          <div>Electronics</div>
-          <div>Farm + Garden</div>
-          <div>Free</div>
-          <div>Furniture</div>
-          <div>Garage Sale</div>
-          <div>General</div>
-          <div>Heavy Equipment</div>
-          <div>Household</div>
-          <div>Jewelry</div>
-          <div>Materials</div>
-          <div>Motorcycle Parts</div>
-          <div>Motorcycles</div>
-          <div>Music Instruments</div>
-          <div>Photo + Video</div>
-          <div>RVs + Camps</div>
-          <div>Sporting</div>
-          <div>Tickets</div>
-          <div>Toys + Games</div>
-          <div>Trailers</div>
-          <div>Video Gaming</div>
-          <div>Wanted</div>
-          <div>Wheels and Tires</div>
         </div>
       </CardBody>
       </Card>
-
-      <Card className="self-start">
-      <CardHeader className="items-center">
-        <div><p>For Sale</p></div>
-      </CardHeader>
-      <Divider/>
-      <CardBody>
-        <div className="grid grid-flow-row grid-cols-2 gap-4">
-          <div>Accounting</div>
-          <div>Admin / Office</div>
-          <div>Arch / Engineering</div>
-          <div>Art / Media / Design</div>
-          <div>Biotech / Science</div>
-          <div>Business / Mgmt</div>
-          <div>Customer Service</div>
-          <div>Education</div>
-          <div>Etc / Misc</div>
-          <div>Food / Bev / Hosp</div>
-          <div>General Labor</div>
-          <div>Government</div>
-          <div>Human Resources</div>
-          <div>Legal / Paralegal</div>
-          <div>Manufacturing</div>
-          <div>Marketing / PR / Ad</div>
-          <div>Medical / Health</div>
-        </div>
-      </CardBody>
-      </Card>
-
     </div>
   );
 } 
