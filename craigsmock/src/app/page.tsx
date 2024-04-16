@@ -1,5 +1,6 @@
 import Image from "next/image";
 import {Card, CardHeader, CardBody, CardFooter, Divider} from "@nextui-org/react";
+import Link from "next/link";
 import './globals.css'
 
 
@@ -43,7 +44,7 @@ export function MiddleContent(){
     <div className="grid grid-flow-row grid-cols-2 content-start gap-4">
     <Card className="self-start">
       <CardHeader className="items-center">
-        <div><p>Community</p></div>
+        <div><Link href="/search?cat=Community" >Community</Link></div>
       </CardHeader>
       <Divider/>
       <CardBody>
