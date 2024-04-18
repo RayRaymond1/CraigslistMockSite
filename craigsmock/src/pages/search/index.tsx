@@ -5,7 +5,7 @@ import SearchLayout from "@/layouts/searchlayout";
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { cat, subCat } = context.query;
 
-  console.log(cat, subCat);
+  //console.log(cat, subCat);
 
   if (!cat || !subCat) {
     // Handle the case when cat or subCat is missing
@@ -21,10 +21,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  const res = await fetch(`http://localhost:3000/api/search?cat=${cat}&subcat=${subCat}`);
-const data = await res.json();
+  const res = await fetch(`http://localhost:3000/api/search?cat=${cat}&subCat=${subCat}`);
+  const data = await res.json();
 
-  console.log(data); // Log the response data
+  //console.log(data); // Log the response data
 
   return {
     props: {

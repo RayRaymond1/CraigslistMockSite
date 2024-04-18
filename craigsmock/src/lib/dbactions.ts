@@ -5,7 +5,7 @@ import oracledb from 'oracledb';
 const dbLogin = {
     user: 'ADMIN',
     password: 'PennStateRocks123!',
-    connectString: 'adb.us-ashburn-1.oraclecloud.com:1522/ge3e960eff1bcbd_e7vmj6vaon0pgohj_low.adb.oraclecloud.com'
+    connectString: '(description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1522)(host=adb.us-ashburn-1.oraclecloud.com))(connect_data=(service_name=ge3e960eff1bcbd_e7vmj6vaon0pgohj_low.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))'
 };
 
 //searchresults function
@@ -13,10 +13,15 @@ export default async function basicSearch(cat, subCat){
     let connection;
     try{
         connection = await oracledb.getConnection(dbLogin);
+        let query, results;
+        if(subCat === "*"){
+            query = 'SELECT * FROM Posts WHERE CategoryID= :cat';
+            results = await connection.execute(query, {cat: cat});
+        } else {
+            query = 'SELECT * FROM Posts WHERE CategoryID= :cat AND SubCategoryID= :subCat';
+            results = await connection.execute(query, {cat: cat, subCat: subCat});  
+        }
 
-        const query = 'SELECT * FROM Posts WHERE CategoryID= :cat AND SubCategoryID= :subCat';
-
-        const results = await connection.execute(query, {cat: cat, subCat: subCat});
 
         // Convert rows to JSON
         const jsonResults = results.rows.map(row => {

@@ -1,22 +1,24 @@
 import basicSearch from '@/lib/dbactions';
 import oracledb from 'oracledb';
-import { NextApiRequest, NextApiResponse } from 'next';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+//import { NextResponse } from 'next/server';
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
-    const cat = req.query?.cat;
+export async function GET(req: NextRequest, res: NextResponse) {
+    const cat = req.nextUrl.searchParams.get("cat");
 
-    const subCat = req.query?.subCat;
+    const subCat = req.nextUrl.searchParams.get("subCat");
 
     if (!cat || typeof cat !== 'string') {
         console.log('Request:', { cat, subCat });
-        return NextResponse.json({ error: 'Missing or invalid cat parameter'}, { status: 400 })
+        return NextResponse.json({ error: 'Missing or invalid cat parameter'}, { status: 400 });
     }
 
-    console.log('Request:', { cat, subCat });
+    //console.log('Request:', { cat, subCat });
 
-    basicSearch(cat, subCat);
+    const results = basicSearch(cat, subCat);
     
-    console.log('Response:', { cat, subCat });
-    
-    return res.status(200).json({ message: 'hello!' });}
+   // console.log('Response:', { cat, subCat });
+    //console.log(results);
+
+    return NextResponse.json({ error: 'Success?'}, { status: 200 });
+}
