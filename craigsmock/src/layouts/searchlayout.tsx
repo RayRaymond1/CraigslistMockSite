@@ -1,36 +1,28 @@
-'use client'
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem } from "@nextui-org/react";
 import Image from "next/image";
-import SidebarComponent from "./sidebarComponent/sidebar";
-import { useSearchParams } from "next/navigation";
+import SidebarComponent from "../app/search/sidebarComponent/sidebar";
+import {useRouter} from "next/router";
+import { useEffect } from 'react';
+import '../app/globals.css'
 
-export default function SearchLayout({children, }: { children: React.ReactNode })  {
-    const searchParams = useSearchParams();
-    const cat = searchParams.get('cat');
+export default function SearchLayout({children, cat, subCat}: { children: React.ReactNode; cat: any; subCat: any;})  {
 
-    if (cat == null) {}
- 
+    
     return (
-        <html lang="en">
-            <body>
+            <main className="w-full h-full">
                 <Navbar className="" maxWidth="sm">
                     <NavbarBrand>
                     <Image src="/testemblem.png" height={50} width={50} alt="" /> <a href="/">Ray's List</a>
                     </NavbarBrand>
                     <NavbarContent justify="center">
                         <NavbarItem>
-                            <p>Philadelphia &gt; {cat} &gt; (SubCategory)</p>
+                            <p>Philadelphia &gt; {cat} &gt; {subCat} From the layout!</p>
                         </NavbarItem>
                     </NavbarContent>
                 </Navbar>
-                <div className="flex">
-                <SidebarComponent/>
-                <main>
+                <div>
                     {children}
-                </main>  
-                </div>
-
-            </body>
-        </html>
+                </div>  
+            </main>
     )
 }
