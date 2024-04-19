@@ -10,23 +10,19 @@ const dbLogin = {
     connectString: '(description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1522)(host=adb.us-ashburn-1.oraclecloud.com))(connect_data=(service_name=ge3e960eff1bcbd_e7vmj6vaon0pgohj_low.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))'
 };
 
-export async function GET(req: NextRequest, res: NextResponse) {
-    let connection, postID;
+export async function POST(req: NextRequest, res: NextResponse) {
+    let connection;
     try {
         connection = await oracledb.getConnection(dbLogin);
-        postID = req.nextUrl.searchParams.get("postID");
-        let query = 'SELECT posts.title, postcontents.* FROM posts JOIN postcontents ON posts.postID = postcontents.postID WHERE Posts.postID= :postID'
+        const postToSave = req.body;
+        let query = ''; //update post and postcontents with body.
 
-        let results = await connection.execute(query, {postID: postID});
+        let results = await connection.execute(query, {});
 
         return NextResponse.json(results, { status: 200 });
     } catch (error) {
-        if (!postID ) {
-            return NextResponse.json({ error: 'Missing or invalid postID' }, { status: 400 });
-        } else {
-            console.error("getPost ERROR: ", error);
-            return NextResponse.json({message: 'Error!', status: 400})
-        }
+        console.log(error);
+            return NextResponse.json({ error: 'Something went wrong...' }, { status: 400 });
     }
 
 }

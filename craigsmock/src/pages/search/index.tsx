@@ -1,9 +1,10 @@
 import { GetServerSideProps } from "next";
 import SidebarComponent from "../../app/search/sidebarComponent/sidebar";
-import SearchLayout from "@/layouts/searchlayout";
+import SubPageLayout from "@/layouts/subPageLayout";
 import { Card, CardBody } from "@nextui-org/react";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
+import Link from "next/link";
 dayjs.extend(relativeTime);
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { cat, subCat } = context.query;
@@ -11,12 +12,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   //console.log(cat, subCat);
 
   if (!cat || !subCat) {
-    // Handle the case when cat or subCat is missing
     console.error("Missing required query parameters: cat or subCat");
-    // You can return an error response or handle it as appropriate
     return {
       props: {},
-      // You can also redirect to an error page if necessary
       redirect: {
         destination: '/error-page',
         permanent: false,
@@ -43,19 +41,19 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 export default function Page({ cat, subCat, data }) {
   return (
     <div>
-      <SearchLayout cat={cat} subCat={subCat}>
+      <SubPageLayout cat={cat} subCat={subCat}>
         <SidebarComponent />
         <div className="w-5/6">
           {data.map((data) => (
             <Card className="flex" key={data.POSTID}>
               <CardBody className="flex-row">
-                <h4 className="mr-5"><b>{data.TITLE}</b></h4> <p className="mr-5">{data.ADDRESS}</p> <p className="mr-5">{dayjs(data.POSTDATE).fromNow()}</p> {data.HASIMAGE ? <p>Has Image</p> : null}
+                <Link className="flex-row" href={`/post?postID=${data.POSTID}`}><h4 className="mr-5"><b>{data.TITLE}</b></h4> <p className="mr-5">{data.ADDRESS}</p> <p className="mr-5">{dayjs(data.POSTDATE).fromNow()}</p> {data.HASIMAGE ? <p>Has Image</p> : null}</Link>
               </CardBody>
             </Card>
           ))}
         </div>
 
-      </SearchLayout>
+      </SubPageLayout>
     </div>
   );
 }
