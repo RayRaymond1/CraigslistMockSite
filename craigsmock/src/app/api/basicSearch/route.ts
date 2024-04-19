@@ -1,4 +1,4 @@
-import basicSearch from '@/lib/dbactions';
+import {basicSearch} from '@/lib/dbactions';
 import oracledb from 'oracledb';
 import { NextRequest, NextResponse } from 'next/server';
 //import { NextResponse } from 'next/server';
@@ -15,10 +15,13 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
     //console.log('Request:', { cat, subCat });
 
-    const results = basicSearch(cat, subCat);
+    const results = await basicSearch(cat, subCat);
     
-   // console.log('Response:', { cat, subCat });
-    //console.log(results);
+    //console.log('Response:', { cat, subCat });
+    
+    //const resultsDisplay = results
 
-    return NextResponse.json({ error: 'Success?'}, { status: 200 });
+    //console.log("inside results object",results);
+
+    return NextResponse.json(results, { status: 200 });
 }

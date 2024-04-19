@@ -20,7 +20,7 @@ export default function SearchLayout({children, cat, subCat}: { children: React.
                         </NavbarItem>
                     </NavbarContent>
                 </Navbar>
-                <div>
+                <div className="flex">
                     {children}
                 </div>  
             </main>
