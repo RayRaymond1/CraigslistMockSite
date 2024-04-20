@@ -11,13 +11,9 @@ const dbLogin = {
 };
 
 export async function GET(req: NextRequest, res: NextResponse) {
-    let connection, postID;
     try {
-        connection = await oracledb.getConnection(dbLogin);
-        postID = req.nextUrl.searchParams.get("postID");
-        let query = 'SELECT posts.title, postcontents.* FROM posts JOIN postcontents ON posts.postID = postcontents.postID WHERE Posts.postID= :postID'
-
-        let results = await connection.execute(query, {postID: postID});
+        const postID = req.nextUrl.searchParams.get("postID");
+        let results = await getPost(postID);
 
         return NextResponse.json(results, { status: 200 });
     } catch (error) {
@@ -30,3 +26,4 @@ export async function GET(req: NextRequest, res: NextResponse) {
     }
 
 }
+

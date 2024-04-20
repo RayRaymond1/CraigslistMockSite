@@ -49,21 +49,16 @@ export async function basicSearch(cat, subCat) {
         }
     }
 
-    module.exports = basicSearch;
-
 }
 
-export async function getPost(postID) {
+export async function getPost(postID){
     let connection;
     try {
         connection = await oracledb.getConnection(dbLogin);
-        let query, results;
-        query = 'SELECT * FROM PostContents WHERE PostID= :postID';
-        results = await connection.execute(query, { postID: postID });
+        let query = 'SELECT posts.title, postcontents.* FROM posts JOIN postcontents ON posts.postID = postcontents.postID WHERE Posts.postID= :postID'
 
+        let results = await connection.execute(query, {postID: postID});
 
-
-        // Convert rows to JSON
         const jsonResults = results.rows.map(row => {
             let obj = {};
             results.metaData.forEach((item, index) => {
@@ -86,6 +81,41 @@ export async function getPost(postID) {
 
         }
     }
-
-    module.exports = getPost;
 }
+
+
+export async function getSubCategories(categoryID){
+    let connection;
+        try {
+        connection = await oracledb.getConnection(dbLogin);
+        let query = 'SELECT subcategoryid, subcategory FROM subcategories WHERE categoryid = :categoryID'; 
+
+        let results = await connection.execute(query, { categoryID: categoryID});
+
+
+        
+        const jsonResults = results.rows.map(row => {
+            let obj = {};
+            results.metaData.forEach((item, index) => {
+                obj[item.name] = row[index];
+            });
+            return obj;
+        });
+
+        return jsonResults;
+
+    } catch (error) {
+        console.error('SQL ERROR: ', error);
+           
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (error) {
+                console.error("SQL DISCCONECT ERROR: ", error);
+            }
+
+        }
+    }
+}
+
