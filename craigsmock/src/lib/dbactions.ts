@@ -1,5 +1,4 @@
 import oracledb from 'oracledb';
-
 //realistically we would NEVER define this here but i mean, school project :-)
 //nor would we let the website connect to the database as an admin with no restrictions, but i mean school project :-)
 const dbLogin = {
@@ -23,7 +22,7 @@ export async function basicSearch(cat, subCat) {
         }
 
 
-        // Convert rows to JSON
+        //convert rows to a JSON object
         const jsonResults = results.rows.map(row => {
             let obj = {};
             results.metaData.forEach((item, index) => {
@@ -55,19 +54,54 @@ export async function getPost(postID){
     let connection;
     try {
         connection = await oracledb.getConnection(dbLogin);
-        let query = 'SELECT posts.title, postcontents.* FROM posts JOIN postcontents ON posts.postID = postcontents.postID WHERE Posts.postID= :postID'
+           // Query to get post information
+        let query = `SELECT posts.title,
+                categories.category,
+                subcategories.subcategory,
+                posts.usePhoneNumber,
+                posts.phoneCallOK,
+                posts.phoneTextOk,
+                posts.phoneNumber,
+                posts.email,
+                posts.address,
+                posts.postdate,
+                postcontents.postid,
+                postcontents.posttext
+            FROM posts
+            JOIN postcontents ON posts.postID = postcontents.postID
+            JOIN subcategories ON posts.subcategoryid = subcategories.subcategoryid
+            JOIN categories ON subcategories.categoryid = categories.categoryid
+            WHERE posts.postID = :postID `;
+       let result = await connection.execute(query, { postID: postID });
 
-        let results = await connection.execute(query, {postID: postID});
+       oracledb.fetchAsString = [oracledb.CLOB];
 
-        const jsonResults = results.rows.map(row => {
-            let obj = {};
-            results.metaData.forEach((item, index) => {
-                obj[item.name] = row[index];
-            });
-            return obj;
-        });
+       // Extracting CLOB data separately
+       let postTextResult = await connection.execute(
+           `SELECT posttext FROM postcontents WHERE postid = :postID`, 
+           { postID: postID }
+       );
+       let postText = postTextResult.rows[0][0];
 
-        return jsonResults;
+       // Build JSON result object
+       let jsonResult = {
+        title: result.rows[0][0],
+        category: result.rows[0][1],
+        subcategory: result.rows[0][2],
+        usePhoneNumber: result.rows[0][3],
+        phoneCallOK: result.rows[0][4],
+        phoneTextOk: result.rows[0][5],
+        phoneNumber: result.rows[0][6],
+        email: result.rows[0][7],
+        address: result.rows[0][8],
+        postdate: result.rows[0][9],
+        postID: result.rows[0][10],
+        postText: postText
+    };
+
+       //console.log(jsonResult);
+
+        return jsonResult;
 
     } catch (error) {
         console.error('SQL ERROR: ', error);
@@ -119,3 +153,88 @@ export async function getSubCategories(categoryID){
     }
 }
 
+export async function createPost(postToSave) {
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbLogin);
+        //crazy how i find out about binds now, i love security!
+        let sql = `INSERT INTO ADMIN.POSTS
+            (TITLE, 
+            USERID,
+            CATEGORYID, 
+            SUBCATEGORYID, 
+            USEEMAILRELAY, 
+            USEPHONENUMBER, 
+            PHONECALLOK, 
+            PHONETEXTOK, 
+            PHONENUMBER, 
+            PHONEEXTENSION, 
+            PHONECONTACTNAME, 
+            ADDRESS, 
+            POSTDATE, 
+            HASIMG)
+                VALUES 
+                (:title, 
+                    :userId, 
+                    :categoryId, 
+                    :subCategoryId, 
+                    :useEmailRelay, 
+                    :usePhoneNumber, 
+                    :phoneCallOk, 
+                    :phoneTextOk, 
+                    :phoneNumber, 
+                    :phoneExtension, 
+                    :phoneContactName, 
+                    :address, 
+                    SYSDATE, 
+                    :hasImg)
+                    RETURNING POSTID INTO :postId`;
+
+
+        let binds = {
+            title: postToSave.title,
+            userId: null,
+            categoryId: postToSave.category,
+            subCategoryId: postToSave.subCategory,
+            useEmailRelay: 0,
+            usePhoneNumber: Number(postToSave.phoneNumberOk),
+            phoneCallOk: Number(postToSave.phoneCallOk),
+            phoneTextOk: Number(postToSave.phoneTextOk),
+            phoneNumber: postToSave.phoneNumber,
+            phoneExtension: null,
+            phoneContactName: null,
+            address: postToSave.address,
+            hasImg: 0,
+            postId: { dir: oracledb.BIND_OUT, type: oracledb.NUMBER }
+        };
+
+
+        let result = await connection.execute(sql, binds, { autoCommit: true });
+
+        let postId = result.outBinds.postId[0];
+
+
+        let sqlPostContents = `INSERT INTO ADMIN.POSTCONTENTS (POSTID, POSTTEXT, IMAGE1, IMAGE2, IMAGE3, IMAGE4)
+        VALUES (:postId, :postText, EMPTY_BLOB(), EMPTY_BLOB(), EMPTY_BLOB(), EMPTY_BLOB())`;
+
+        let bindsPostContents = {
+            postId: postId,
+            postText: postToSave.description
+        };
+
+        await connection.execute(sqlPostContents, bindsPostContents, { autoCommit: true });
+
+    } catch (error) {
+        console.error('SQL ERROR: ', error);
+
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (error) {
+                console.error("SQL DISCCONECT ERROR: ", error);
+            }
+
+        }
+    }
+}

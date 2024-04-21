@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 export default function Page({ cat, subCat, data }) {
   return (
     <div>
-      <SubPageLayout cat={cat} subCat={subCat}>
+      <SubPageLayout cat={cat} subCat={subCat} className="" createPost={false}>
         <SidebarComponent />
         <div className="w-5/6">
           {data.map((data) => (

@@ -5,7 +5,9 @@ import {useRouter} from "next/router";
 import { useEffect } from 'react';
 import '../app/globals.css'
 
-export default function SubPageLayout({children, cat, subCat, className}: { children: React.ReactNode; cat: any; subCat: any; className: any;})  {
+export default function SubPageLayout({children, cat, subCat, className, createPost}: { children: React.ReactNode; cat: any; subCat: any; className: any; createPost: boolean;})  {
+
+
 
     className = className + " flex w-full h-full";
     return (
@@ -16,7 +18,7 @@ export default function SubPageLayout({children, cat, subCat, className}: { chil
                     </NavbarBrand>
                     <NavbarContent justify="center">
                         <NavbarItem>
-                            <p>Philadelphia &gt; {cat} &gt; {subCat} From the layout!</p>
+                            {createPost == true ? <p> Create a Post!</p> :<p>Philadelphia &gt; {cat} &gt; {subCat}</p>}
                         </NavbarItem>
                     </NavbarContent>
                 </Navbar>
