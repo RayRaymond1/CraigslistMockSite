@@ -3,6 +3,7 @@ import { Button, Checkbox, Input, Textarea } from "@nextui-org/react";
 import { GetServerSideProps } from "next";
 import dayjs from "dayjs";
 import relativeTime from 'dayjs/plugin/relativeTime';
+import Router from "next/router";
 dayjs.extend(relativeTime);
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -23,7 +24,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const res = await fetch(`http://localhost:3000/api/getPost?postID=${postID}`);
     const data = await res.json();
 
-    console.log(data);
+    //console.log(data);
     return {
         props : {
             data
@@ -45,11 +46,25 @@ export default function Page({ data }) {
 
 export function CommonFields({ data }) { // post title, location, post description, contact info
     
-    
+    const deletePost = () =>
+        {
+            const postIDtoDelete = { postID : data.postID}
+            fetch(`http://localhost:3000/api/deletePost`, {
+                method: 'DELETE',
+                body: JSON.stringify(postIDtoDelete)
+            });
+
+            Router.push("/");
+        }
+
+    const updatePost = () =>
+        {
+            Router.push(`/updatePost?postID=${data.postID}`);
+        }
 
     return (
         <div className="flex flex-col  w-96">
-            <div className="flex place-content-center"><Button color="primary" className="mr-5">Update</Button> <Button color="warning">Delete</Button></div>
+            <div className="flex place-content-center"><Button onClick={updatePost} color="primary" className="mr-5">Update</Button> <Button onClick={deletePost} color="warning">Delete</Button></div>
             <div className="flex flex-row mb-5 justify-between w-full">
                 <h3 className=""><b>{data.title}</b></h3> <h2>Posted about {dayjs(data.postdate).fromNow()}</h2>
 

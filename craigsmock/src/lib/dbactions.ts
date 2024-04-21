@@ -14,10 +14,10 @@ export async function basicSearch(cat, subCat) {
         connection = await oracledb.getConnection(dbLogin);
         let query, results;
         if (subCat === "*") {
-            query = 'SELECT * FROM Posts WHERE CategoryID= :cat';
+            query = `SELECT * FROM Posts WHERE CategoryID= :cat`;
             results = await connection.execute(query, { cat: cat });
         } else {
-            query = 'SELECT * FROM Posts WHERE CategoryID= :cat AND SubCategoryID= :subCat';
+            query = `SELECT * FROM Posts WHERE CategoryID= :cat AND SubCategoryID= :subCat`;
             results = await connection.execute(query, { cat: cat, subCat: subCat });
         }
 
@@ -66,6 +66,8 @@ export async function getPost(postID){
                 posts.address,
                 posts.postdate,
                 postcontents.postid,
+                categories.categoryID,
+                subcategories.subcategoryID,
                 postcontents.posttext
             FROM posts
             JOIN postcontents ON posts.postID = postcontents.postID
@@ -96,6 +98,8 @@ export async function getPost(postID){
         address: result.rows[0][8],
         postdate: result.rows[0][9],
         postID: result.rows[0][10],
+        categoryID: result.rows[0][11],
+        subCategoryID: result.rows[0][12],
         postText: postText
     };
 
@@ -122,7 +126,7 @@ export async function getSubCategories(categoryID){
     let connection;
         try {
         connection = await oracledb.getConnection(dbLogin);
-        let query = 'SELECT subcategoryid, subcategory FROM subcategories WHERE categoryid = :categoryID'; 
+        let query = `SELECT subcategoryid, subcategory FROM subcategories WHERE categoryid = :categoryID`; 
 
         let results = await connection.execute(query, { categoryID: categoryID});
 
@@ -158,7 +162,7 @@ export async function createPost(postToSave) {
     try {
         connection = await oracledb.getConnection(dbLogin);
         //crazy how i find out about binds now, i love security!
-        let sql = `INSERT INTO ADMIN.POSTS
+        let sql = `INSERT INTO POSTS
             (TITLE, 
             USERID,
             CATEGORYID, 
@@ -214,7 +218,7 @@ export async function createPost(postToSave) {
         let postId = result.outBinds.postId[0];
 
 
-        let sqlPostContents = `INSERT INTO ADMIN.POSTCONTENTS (POSTID, POSTTEXT, IMAGE1, IMAGE2, IMAGE3, IMAGE4)
+        let sqlPostContents = `INSERT INTO POSTCONTENTS (POSTID, POSTTEXT, IMAGE1, IMAGE2, IMAGE3, IMAGE4)
         VALUES (:postId, :postText, EMPTY_BLOB(), EMPTY_BLOB(), EMPTY_BLOB(), EMPTY_BLOB())`;
 
         let bindsPostContents = {
@@ -235,6 +239,103 @@ export async function createPost(postToSave) {
                 console.error("SQL DISCCONECT ERROR: ", error);
             }
 
+        }
+    }
+}
+
+export async function deletePost(postID) {
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbLogin);
+
+        let bindsContent = {
+            postID: postID
+        };
+
+        let postsContentsQuery = `DELETE FROM postcontents WHERE postID = :postID`;
+
+        await connection.execute(postsContentsQuery, bindsContent, { autoCommit: true })
+
+
+
+        let postsQuery = `DELETE FROM posts WHERE postID = :postID`;
+        
+        let binds = {
+            postID: postID
+        };
+
+        
+        await connection.execute(postsQuery, binds, { autoCommit: true })
+
+
+
+
+    } catch (error) {
+        console.error('SQL ERROR: ', error);
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (error) {
+                console.error("SQL DISCCONECT ERROR: ", error);
+            }
+
+        }
+    }
+}
+
+export async function updatePost(postToUpdate) {
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbLogin);
+
+        let sql = `UPDATE POSTS
+                   SET TITLE = :title,
+                       CATEGORYID = :categoryId,
+                       SUBCATEGORYID = :subCategoryId,
+                       USEPHONENUMBER = :usePhoneNumber,
+                       PHONECALLOK = :phoneCallOk,
+                       PHONETEXTOK = :phoneTextOk,
+                       PHONENUMBER = :phoneNumber,
+                       ADDRESS = :address
+                   WHERE POSTID = :postId`;
+
+        let binds = {
+            title: postToUpdate.title,
+            categoryId: postToUpdate.category,
+            subCategoryId: postToUpdate.subCategory,
+            usePhoneNumber: postToUpdate.phoneNumberOk? 1 : 0,
+            phoneCallOk: postToUpdate.phoneCallOk? 1 : 0,
+            phoneTextOk: postToUpdate.phoneTextOk? 1 : 0,
+            phoneNumber: postToUpdate.phoneNumber,
+            address: postToUpdate.address,
+            postId: postToUpdate.postID
+        };
+
+        await connection.execute(sql, binds, { autoCommit: true });
+
+        let sqlPostContents = `UPDATE POSTCONTENTS
+                               SET POSTTEXT = :postText
+                               WHERE POSTID = :postId`;
+
+        let bindsPostContents = {
+            postText: postToUpdate.description,
+            postId: postToUpdate.postID
+        };
+
+        await connection.execute(sqlPostContents, bindsPostContents, { autoCommit: true });
+
+    } catch (error) {
+        console.error('SQL ERROR: ', error);
+        throw error;
+
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (error) {
+                console.error("SQL DISCCONECT ERROR: ", error);
+            }
         }
     }
 }
