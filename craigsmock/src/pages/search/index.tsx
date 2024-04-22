@@ -7,7 +7,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import Link from "next/link";
 dayjs.extend(relativeTime);
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { cat, subCat } = context.query;
+  let { cat, subCat } = context.query;
 
   //console.log(cat, subCat);
 
@@ -27,6 +27,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   //console.log(data); // Log the response data
 
+  const headerRes = await fetch(`http://localhost:3000/api/getCategoryandSubCategoryName?cat=${cat}&subCat=${subCat}`)
+  const headerData = await headerRes.json();
+  console.log(headerData);
+  cat = headerData.cat
+  if(subCat === "*"){
+    subCat = "All";
+  } else {
+    subCat = headerData.subCat
+  }
   return {
     props: {
       cat,

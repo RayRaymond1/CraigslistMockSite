@@ -17,7 +17,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
 
         return NextResponse.json(results, { status: 200 });
     } catch (error) {
-        if (!postID ) {
+        if (!postID  ) {
             return NextResponse.json({ error: 'Missing or invalid postID' }, { status: 400 });
         } else {
             console.error("getPost ERROR: ", error);

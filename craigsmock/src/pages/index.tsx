@@ -35,7 +35,7 @@ export function LeftBar(){
 export function RightBar(){
   return (
     <div className="flex justify-between bg-slate-200 border-x-2 border-slate-500 w-1/6">
-        Hello
+        Welcome to Ray's List. an ETI461 Course Project Final.
     </div>
   );
 }

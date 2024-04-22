@@ -339,3 +339,83 @@ export async function updatePost(postToUpdate) {
         }
     }
 }
+
+
+export async function searchResults(cat, subCat) {
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbLogin);
+        
+        let catQuery = `SELECT category FROM categories WHERE categoryid = :category`;
+
+        let binds = {
+            category : cat
+        }
+
+        let catResult = await connection.execute(catQuery, binds);
+
+        let subCatQuery = `SELECT subcategory FROM subcategories WHERE subcategoryid = :subcategory`;
+
+
+        let subCatbinds = {
+            subcategory : subCat
+        }
+
+        let subCatResult = await connection.execute(subCatQuery, subCatbinds);
+        
+        let jsonResult = {
+            cat: catResult.rows[0][0],
+            subCat : subCatResult.rows[0][0]
+        };
+
+        return jsonResult
+
+    } catch (error) {
+        console.error('SQL ERROR: ', error);
+        throw error;
+
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (error) {
+                console.error("SQL DISCCONECT ERROR: ", error);
+            }
+        }
+    }
+}
+
+export async function searchResultsNoSubCat(cat) {
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbLogin);
+        
+        let catQuery = `SELECT category FROM categories WHERE categoryid = :cat`;
+        console.log("sql cat", cat);
+        let binds = {
+            cat : cat
+        }
+
+        let catResult = await connection.execute(catQuery, binds);
+
+        
+        let jsonResult = {
+            cat: catResult.rows[0][0],
+        };
+
+        return jsonResult
+
+    } catch (error) {
+        console.error('SQL ERROR: ', error);
+        throw error;
+
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (error) {
+                console.error("SQL DISCCONECT ERROR: ", error);
+            }
+        }
+    }
+}
